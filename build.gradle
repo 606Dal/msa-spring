@@ -42,12 +42,10 @@ dependencies {
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     testImplementation 'org.springframework.boot:spring-boot-starter-validation-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // security
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
@@ -58,7 +56,11 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3'
 
     // eureka client
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // kafka
+    implementation 'org.springframework.boot:spring-boot-starter-kafka'
+    testImplementation 'org.springframework.boot:spring-boot-starter-kafka-test'
 }
 
 tasks.named('test') {
