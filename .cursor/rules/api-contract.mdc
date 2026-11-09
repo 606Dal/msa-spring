@@ -1,0 +1,25 @@
+---
+description: 컨트롤러와 공통 성공·실패 응답 계약
+globs: "**/controller/**/*.java,**/common/**/*.java"
+alwaysApply: false
+---
+
+# API 응답
+
+성공 본문은 `BaseResponseEntity`. 데이터가 있으면 `ok(data)`, 없으면 `ok()`.
+
+```java
+@PostMapping("/sign-up")
+public BaseResponseEntity<Void> signUp(@Valid @RequestBody SignUpRequest request) {
+    authService.signUp(request);
+    return BaseResponseEntity.ok();
+}
+```
+
+- `@RestController`, 리소스 경로의 `@RequestMapping`, `@RequiredArgsConstructor`를 붙인다.
+- 본문은 `@Valid @RequestBody`, 경로는 `@PathVariable`, 쿼리는 `@RequestParam`.
+- 응답은 `*Response.from(...)`으로 만들고, 컨트롤러에서 JPA 엔티티를 반환하지 않는다.
+- 업무 실패는 서비스의 `throw new CustomExcption(ErrorCode.XXX)`로 흘린다. 컨트롤러에서 잡아서 응답을 만들지 않는다.
+- 검증 실패는 `GlobalExcetionHandler`가 `ErrorCode.INVALID_REQUEST`(3000)로 바꾼다. 상세는 `필드명: 메시지`를 쉼표로 잇는다.
+- 새 업무 오류는 `ErrorCode`에 `code`, `HttpStatus`, 한글 `message`로만 추가한다. 검증은 3000대, 업무는 4000대, 서버는 5000대.
+- 인증이 없는 API의 컨트롤러에만 `@SecurityRequirements`를 붙인다.

@@ -1,0 +1,24 @@
+---
+description: 서비스의 트랜잭션, 조회 실패, 엔티티 변경
+globs: "**/service/**/*.java"
+alwaysApply: false
+---
+
+# 서비스
+
+`@Service`와 `@RequiredArgsConstructor`를 붙인다. 리포지토리와 협력 객체는 `private final`이다.
+
+- 쓰기는 `@Transactional`, 읽기는 `@Transactional(readOnly = true)`.
+- 조회 실패는 `orElseThrow(() -> new CustomExcption(ErrorCode.XXX))`.
+- 중복 검사는 `exists*` 후 `CustomExcption`을 던진다.
+- 생성은 빌더로 하고, 저장 결과로 이후 작업(Kafka 발행 등)을 같은 메서드에서 잇는다.
+- 값 변경은 엔티티 메서드를 호출한다.
+- 목록에서 연관을 쓰면 리포지토리가 한 번에 조회하게 한다. 루프 안에서는 조회와 저장을 호출하지 않는다.
+
+```java
+Product product = productRepository.findById(id)
+        .orElseThrow(() -> new CustomExcption(ErrorCode.PRODUCT_NOT_FOUND));
+product.changePriceByAdmin(request.getPrice());
+```
+
+`Optional.get()`으로 없음을 넘기지 않는다.

@@ -1,0 +1,17 @@
+---
+description: application 설정과 Gradle 의존성 추가 기준
+globs: "**/application*.yaml,**/application*.yml,build.gradle,settings.gradle"
+alwaysApply: false
+---
+
+# 설정과 의존성
+
+- 이 모듈은 `spring.application.name: member-service`, `server.port: 8082`.
+- DB는 MySQL, URL에 `serverTimezone=Asia/Seoul`와 `characterEncoding=UTF-8`.
+- JPA는 `ddl-auto: update`, `open-in-view: false`, `show-sql: true`, `format_sql: true`.
+- Kafka 컨슈머 값은 String 역직렬화, 프로듀서 값은 `JacksonJsonSerializer`, `spring.json.add.type.headers: false`.
+- JWT·DB 비밀번호는 `jwt.*`, `spring.datasource.*` 키를 그대로 읽는다. 룰이나 새 소스에 비밀값을 복사하지 않는다.
+- API 문서는 `/v3/api-docs`, Swagger UI는 `/swagger-ui.html`, `persist-authorization: true`.
+- 의존성은 `build.gradle`의 `dependencies`에 추가한다. Lombok은 `compileOnly`와 `annotationProcessor`를 함께 둔다.
+- 웹은 `spring-boot-starter-webmvc`. Boot 4의 Swagger는 `springdoc-openapi-starter-webmvc-ui` 3.0.x. Boot 3용 `spring-boot-starter-web`이나 springdoc 2.x로 바꾸지 않는다.
+- 테스트는 JUnit Platform(`tasks.named('test') { useJUnitPlatform() }`).

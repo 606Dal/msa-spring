@@ -1,0 +1,25 @@
+---
+description: JPA 엔티티와 Spring Data 리포지토리
+globs: "**/entity/**/*.java,**/repository/**/*.java"
+alwaysApply: false
+---
+
+# 엔티티와 리포지토리
+
+- `@Entity`, `@Getter`, JPA용 `@NoArgsConstructor`. `@Setter`는 두지 않는다.
+- 키는 `@Id`와 `@GeneratedValue(strategy = GenerationType.IDENTITY)`, 타입은 `Long`.
+- 연관은 `@ManyToOne(fetch = FetchType.LAZY)`. 목록에서 연관이 필요하면 `JOIN FETCH` 또는 `@EntityGraph`로 한 번에 조회한다. N+1·인덱스 기준은 `api-performance` 룰을 따른다.
+- 제약과 유니크는 `@Column`에 선언한다. enum은 `@Enumerated(EnumType.STRING)`.
+- 상태 변경은 `changePriceByAdmin`, `softDeleteByUser`처럼 의도가 드러나는 메서드로 한다.
+- `deleted`가 있는 엔티티의 목록은 `findByDeletedFalse`처럼 삭제분을 제외한다.
+- 리포지토리는 `JpaRepository<엔티티, Long>` 인터페이스다. 연관이 없는 단건·단순 조건은 파생 쿼리, 컬렉션에서 연관을 읽을 때는 JPQL fetch join 또는 `@EntityGraph`를 쓴다.
+
+```java
+@Query("""
+        SELECT c
+        FROM Cart c
+        JOIN FETCH c.product
+        WHERE c.member.id = :memberId
+        """)
+List<Cart> findAllByMemberId(Long memberId);
+```

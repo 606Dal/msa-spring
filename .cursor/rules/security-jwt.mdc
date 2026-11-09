@@ -1,0 +1,17 @@
+---
+description: Stateless JWT 필터, 인가 경로, 인증 오류 JSON
+globs: "**/security/**/*.java"
+alwaysApply: false
+---
+
+# JWT 보안
+
+세션은 `STATELESS`. CSRF, formLogin, httpBasic은 끄고, `JwtAuthenticationFilter`를 `UsernamePasswordAuthenticationFilter` 앞에 둔다.
+
+- 헤더는 `Authorization: Bearer `. subject는 회원 `uuid`, `role` 클레임은 `Role.name()`.
+- 비밀키와 만료는 `jwt.secret`, `jwt.expiration-ms`에서 읽는다. 코드에 값을 적지 않는다.
+- 비밀번호 인코더 빈은 `BCryptPasswordEncoder`.
+- 공개 경로는 `permitAll`에 적는다. 현재 공개 경로는 `/auth/**`, `/error`, `/product/**`, `/swagger-ui/**`, `/swagger-ui.html`, `/v3/api-docs`, `/v3/api-docs/**`, `/v3/api-docs.yaml`. 나머지는 `authenticated`.
+- 401은 `JwtAuthenticationEntryPoint`와 `ErrorCode.UNAUTHORIZED`, 403은 `JwtAccessDeniedHandler`와 `ErrorCode.FORBIDDEN`. JSON 필드는 `code`, `status`, `message`.
+- `UserDetails.username`은 uuid다.
+- Swagger 스킴 이름은 `bearerAuth`. 문서에는 accessToken만 넣고 Bearer 접두사는 붙이지 않는다.
