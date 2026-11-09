@@ -33,4 +33,12 @@ public class Member {
     @Column(nullable = false)
     private Role role;
 
+    public void changeEmail(String email) {
+        this.email = email;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
 }
