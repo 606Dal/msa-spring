@@ -1,0 +1,23 @@
+---
+description: member-service의 스택, 패키지, 계층, 공통 계약
+alwaysApply: true
+---
+
+# member-service 구조
+
+Java 17, Spring Boot 4, Gradle. 루트 패키지는 `com.example.spring`. 기능 코드는 `com.example.spring.test.{도메인}`에 둔다.
+
+도메인은 `product`, `member`, `cart`. 계층은 `controller`, `service`, `repository`, `entity`, `request`, `response`. 공통 응답·예외는 `test.common`, 인증은 `test.security`, 메시징은 `test.kafka`.
+
+- 컨트롤러는 HTTP와 검증만 담당하고, 업무 규칙과 저장은 서비스에 둔다.
+- 서비스가 트랜잭션 경계다. 저장소는 `JpaRepository` 인터페이스다.
+- 엔티티 상태 변경은 setter 대신 엔티티 메서드로 한다.
+- 성공 응답은 `BaseResponseEntity`, 업무 실패는 `ErrorCode`와 `CustomExcption`, 오류 본문은 `ErrorResposeEntity`를 재사용한다.
+- 기존 클래스 철자를 유지한다. `CustomExcption`, `ErrorResposeEntity`, `GlobalExcetionHandler`.
+- 의존성은 `@RequiredArgsConstructor`와 `private final` 필드로 주입한다.
+- 회원 식별자는 `uuid`다. JWT subject와 `UserDetails` username도 uuid다.
+- 비밀번호는 `PasswordEncoder`로 저장한다.
+- Eureka 클라이언트는 꺼져 있다. 요청이 없으면 활성화하지 않는다.
+- 새 API의 목록·연관 조회는 쿼리 수를 고정하고, 조건·조인·정렬 컬럼에는 인덱스를 둔다.
+
+다른 서비스에 옮길 때 `spring.application.name`, `server.port`, 도메인 패키지만 바꾸고, 계층과 응답·예외·JWT 계약은 유지한다.

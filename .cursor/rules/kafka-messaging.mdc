@@ -1,0 +1,22 @@
+---
+description: Kafka 발행·수신 DTO와 리스너
+globs: "**/kafka/**/*.java"
+alwaysApply: false
+---
+
+# Kafka
+
+- 메시지 DTO는 `@Getter @Builder @AllArgsConstructor @NoArgsConstructor @ToString`. Jackson 역직렬화를 위해 기본 생성자를 둔다.
+- 발행은 `KafkaTemplate<String, Object>`. 저장이 끝난 뒤 `kafkaTemplate.send(토픽, dto)`.
+- 수신은 `@Component`와 `@KafkaListener(topics, groupId)`. 파라미터 타입은 해당 DTO다.
+- 타입 헤더는 넣지 않는다. 수신 변환은 `JacksonJsonMessageConverter`와 `TypePrecedence.INFERRED`.
+- 기존 토픽·그룹을 재사용한다. 상품 생성 `product_created`, 구매 완료 `purchase_success`, 그룹 `purchase_group`.
+- 리스너 본문은 도메인 서비스를 호출한다.
+
+```java
+kafkaTemplate.send("product_created", ProductCreateKafkaDto.builder()
+        .productId(saved.getId())
+        .name(saved.getName())
+        .price(saved.getPrice())
+        .build());
+```

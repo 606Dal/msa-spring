@@ -1,0 +1,30 @@
+---
+description: 요청·응답 DTO와 Bean Validation
+globs: "**/request/**/*.java,**/response/**/*.java"
+alwaysApply: false
+---
+
+# 요청·응답 DTO
+
+요청은 `{도메인}.request`의 `*Request`, 응답은 `{도메인}.response`의 `*Response`.
+
+- 요청은 `@Getter`. 필드는 `jakarta.validation`으로 검증하고 `message`는 한글로 쓴다.
+- 문자열 필수는 `@NotBlank`, 값 필수는 `@NotNull`, 이메일은 `@Email`, 길이는 `@Size`.
+- 응답은 `@Getter`와 빌더. 엔티티를 필드로 담지 않는다.
+- 변환은 `public static *Response from(소스)`.
+
+```java
+@NotBlank(message = "상품명은 필수입니다.")
+@Size(max = 10, message = "상품은 최대 10자까지 가능합니다.")
+private String name;
+```
+
+```java
+public static ProductResponse from(Product product) {
+    return ProductResponse.builder()
+            .id(product.getId())
+            .productName(product.getName())
+            .price(product.getPrice())
+            .build();
+}
+```
